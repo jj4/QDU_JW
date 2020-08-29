@@ -1,0 +1,5 @@
+prettytable==0.7.2
+requests==2.22.0
+lxml==4.4.1
+pytesseract==0.3.4
+Pillow==7.2.0
