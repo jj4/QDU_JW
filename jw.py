@@ -96,9 +96,9 @@ class qdujw:
         try:
             name = etree.HTML(head_page.content).xpath('//*[@id="greeting"]/span/text()')[0]
             print(name + '登录成功！')
-        except Exception as err:
+        except AttributeError:
+            print("Cookie失效 正在重新登录...")
             self.get_cookie()
-            print(err)
 
     # 查成绩
     def scores(self):
@@ -142,10 +142,13 @@ class qdujw:
                 'seq': seq,  # 课序号
                 '_': int(round(time.time() * 1000))  # 时间戳
             }
-            elect_page = self.s.get(self.url['select'], headers=self.headers, params=course).json()
-            coursename = elect_page["result"]["coursename"]
-            message = elect_page["result"]["message"]
-            print(coursename, message)
+            try:
+                elect_page = self.s.get(self.url['select'], headers=self.headers, params=course).json()
+                coursename = elect_page["result"]["coursename"]
+                message = elect_page["result"]["message"]
+                print(coursename, message)
+            except ValueError:
+                print("现在不能选课！")
 
     # 选课系统2 可一次选多门专业限选课
     def select(self, courselist):
@@ -166,11 +169,14 @@ class qdujw:
                 'epid': courselist,
                 '_': int(round(time.time() * 1000))  # 时间戳
             }
-            select_page = self.s.get(self.url['select'], headers=self.headers, params=course_list).json()
-            # print(select_page)
-            tplt = "{0:{3}^10}\t{1:{3}^10}\t{2:^10}"
-            for item in select_page["resultList"]:
-                print("{:15}\t{:15}\t{:30}".format(item['pcourseid'], item['coursename'], item['message']))
+            try:
+                select_page = self.s.get(self.url['select'], headers=self.headers, params=course_list).json()
+                # print(select_page)
+                tplt = "{0:{3}^10}\t{1:{3}^10}\t{2:^10}"
+                for item in select_page["resultList"]:
+                    print("{:15}\t{:15}\t{:30}".format(item['pcourseid'], item['coursename'], item['message']))
+            except ValueError:
+                print("现在不能选课！")
 
     def timetable(self):
         print('---------- 课表查询 ----------')
@@ -231,12 +237,15 @@ if __name__ == '__main__':
         if choice == '2':
             jw.timetable()
         if choice == '3':
-            # while 1:
             # 用法示例
+            # while 1:
             jw.select('484928711,484922594,485046996,485276973')
-            # jw.elect('C06080004017', '1')  # DSP原理及应用
-            # jw.elect('4471080801018', '1')  # 信号与系统
-            # jw.elect('C06080004018', '1')  # 控制系统仿真（MATLAB）
-            # jw.elect('C06080004032', '1')  # 工业控制组态软件
+            '''
+            jw.select('484928711,485046996')
+            jw.elect('C06080004017', '1')  # DSP原理及应用
+            jw.elect('4471080801018', '1')  # 信号与系统
+            jw.elect('C06080004018', '2')  # 控制系统仿真（MATLAB）
+            jw.elect('C06080004032', '2')  # 工业控制组态软件
+            '''
         if choice == '4':
             exit()
