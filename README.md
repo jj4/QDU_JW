@@ -1,4 +1,4 @@
-# qdu_jw
+# qdu-jw-helper
 
 青岛大学教务爬虫 内网使用效果更佳
 
